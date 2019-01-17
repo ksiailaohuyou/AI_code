@@ -16,6 +16,7 @@ lin_reg.fit(X,y)
 
 
 print(lin_reg.intercept_,lin_reg.coef_)
+print(lin_reg.intercept_,lin_reg.coef_)
 
 
 X_new =np.array([[0],[2]])
