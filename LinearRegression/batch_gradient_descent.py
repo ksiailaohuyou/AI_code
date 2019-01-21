@@ -25,5 +25,3 @@ for each in range(n_iterations):
 
 print(count)
 print(theta)
-
-
