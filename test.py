@@ -1,19 +1,16 @@
-a = [1, 800]
-b = [2, 3, 4, 5, 6, 700, ]
-
-c = a + b
-c.sort()
-print(c)
-
-a1=[]
-a2=[]
-for  each  in   range(len(c)):
-    if  each %2==1:
-        a1.append(c[each])
-    else:
-        a2.append(c[each])
+# class   singleton():
+#     def  __new__(cls, *args, **kwargs):
+#
+#         if not hasattr(cls,'_instance'):
+def singleton(cls,*args,**kw):
+    instances={}
+    def getinstance():
+        if cls not in instances:
+            instances[cls]=cls(*args,**kw)
+        return instances[cls]
+    return getinstance
 
 
-print(a1,a2)
+
 
 
