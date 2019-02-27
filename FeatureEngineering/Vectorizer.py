@@ -164,9 +164,9 @@ def pca():
 
 
 if __name__ == '__main__':
-    # dicvec()
+    dicvec()
     # mm()
-    pca()
+    # pca()
     # var()
     # im()
     # countvec()
