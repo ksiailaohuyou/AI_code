@@ -14,6 +14,7 @@ d = {1: 'g-', 2: 'r+', 10: 'y*'}
 
 for i in d:
     print(i)
+    # 多项式
     poly_features = PolynomialFeatures(degree=i, include_bias=False)
     X_poly = poly_features.fit_transform(X)
     # print(X[0])
