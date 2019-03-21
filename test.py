@@ -1,20 +1,15 @@
-from time import ctime, sleep
-def timefun_arg(pre="hello"):
-    def timefun(func):
-        def wrappedfunc():
-            print("%s called at %s %s"%(func.__name__, ctime(), pre))
-            return func()
-        return wrappedfunc
-    return timefun
-@timefun_arg("itcast")
-def foo():
-    print("I am foo")
-@timefun_arg("python")
-def too():
-    print("I am too")
-foo()
-sleep(2)
-foo()
-too()
-sleep(2)
-too()
+# from  collections  import Counter
+# dict_1=Counter([1,2,3,3,2])
+# import   copy
+#
+#
+# sorted()
+
+
+import   re
+tels=['123456789','123456784','123456782']
+
+for  tel in tels:
+    ret=re.match('[\d]{8}[0-3,5-6,8-9]',tel)
+    if  ret:
+        print(ret.group())
