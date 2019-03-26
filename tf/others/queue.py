@@ -1,10 +1,10 @@
 import tensorflow as tf
 import os
 # 定义cifar的数据等命令行参数
-FLAGS = tf.app.flags.FLAGS
-
-tf.app.flags.DEFINE_string("cifar_dir", "./data/cifar10/cifar-10-batches-bin/", "文件的目录")
-tf.app.flags.DEFINE_string("cifar_tfrecords", "./tmp/cifar.tfrecords", "存进tfrecords的文件")
+# FLAGS = tf.app.flags.FLAGS
+#
+# tf.app.flags.DEFINE_string("cifar_dir", "./data/cifar10/cifar-10-batches-bin/", "文件的目录")
+# tf.app.flags.DEFINE_string("cifar_tfrecords", "./tmp/cifar.tfrecords", "存进tfrecords的文件")
 def  test01():
     # 模拟一下同步先处理数据，然后才能取数据训练
     # tensorflow当中，运行操作有依赖性
@@ -75,24 +75,31 @@ def  test02():
         coord.request_stop()
 
         coord.join(threads)
-def  csvread(filelist):
+def csvread(filelist):
     """
     读取CSV文件
     :param filelist: 文件路径+名字的列表
     :return: 读取的内容
     """
     # 1、构造文件的队列
-    file_queue=tf.train.string_input_producer(filelist)
+    file_queue = tf.train.string_input_producer(filelist)
 
     # 2、构造csv阅读器读取队列数据（按一行）
-    reader=tf.TextLineReader()
-    key,value=reader.read(file_queue)
+    reader = tf.TextLineReader()
+
+    key, value = reader.read(file_queue)
 
     # 3、对每行内容解码
     # record_defaults:指定每一个样本的每一列的类型，指定默认值[["None"], [4.0]]
-    records=[['None'],['None']]
+    records = [["None"], ["None"]]
 
     example, label = tf.decode_csv(value, record_defaults=records)
+
+    # 4、想要读取多个数据，就需要批处理
+    example_batch, label_batch = tf.train.batch([example, label], batch_size=9, num_threads=1, capacity=9)
+
+    print(example_batch, label_batch)
+    return example_batch, label_batch
 
 
 
@@ -134,20 +141,49 @@ def picread(filelist):
 
     return image_batch
 
-if __name__=="__main__":
-    # test01()
-    # test02()
-    # 1、找到文件，放入列表   路径+名字  ->列表当中
-    file_name = os.listdir(FLAGS.cifar_dir)
 
-    filelist = [os.path.join(FLAGS.cifar_dir, file) for file in file_name if file[-3:] == "bin"]
+def   read_traindata(filelist):
+    """
+        读取CSV文件
+        :param filelist: 文件路径+名字的列表
+        :return: 读取的内容
+        """
+    # 1、构造文件的队列
+    file_queue = tf.train.string_input_producer(filelist)
+
+    # 读取的时候需要跳过第一行
+    reader = tf.TextLineReader(skip_header_lines=1)
+    key, value = reader.read(file_queue)
+
+    # 3、对每行内容解码
+    # record_defaults:指定每一个样本的每一列的类型，指定默认值[["None"], [4.0]]
+    records = [[0]]*785
+    records[0][0]=1
+
+    data_line = tf.decode_csv(value, record_defaults=records)
+    # data_line_list = tf.decode_csv(value, record_defaults=records,)
+    # print(  data_line)
+    # 4、想要读取多个数据，就需要批处理
+    data_line_list = tf.train.batch(data_line, batch_size=2, num_threads=1, capacity=9)
+    target=  data_line_list[0]
+    features=tf.stack(data_line_list[1:])
+
+    return target,features
+
+if __name__=="__main__":
+
+    # 1、找到文件，放入列表   路径+名字  ->列表当中
+    # file_name = os.listdir(FLAGS.cifar_dir)
+    #
+    # filelist = [os.path.join(FLAGS.cifar_dir, file) for file in file_name if file[-3:] == "bin"]
 
     # print(file_name)
-    cf = CifarRead(filelist)
+    target, features = read_traindata(['../NN/DNN/MNIST_CSV/train.csv'])
+    # data_line_list = read_traindata(['../NN/DNN/MNIST_CSV/train.csv'])
 
     # image_batch, label_batch = cf.read_and_decode()
 
-    image_batch, label_batch = cf.read_from_tfrecords()
+    # image_batch, label_batch = cf.read_from_tfrecords()
 
     # 开启会话运行结果
     with tf.Session() as sess:
@@ -165,7 +201,8 @@ if __name__=="__main__":
         # print("结束存储")
 
         # 打印读取的内容
-        print(sess.run([image_batch, label_batch]))
+        # print(sess.run([data_line_list]))
+        print(sess.run([target, features]))
 
         # 回收子线程
         coord.request_stop()

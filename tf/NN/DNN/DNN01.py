@@ -77,7 +77,7 @@ init = tf.global_variables_initializer()
 
 # 计算图阶段
 mnist = input_data.read_data_sets("../tf/data/mnist/input_data")
-# mnist = input_data.read_data_sets
+# mnist = input_data.r
 n_epochs = 40
 batch_size = 50
 
@@ -87,7 +87,6 @@ with tf.Session() as sess:
     for epoch in range(n_epochs):
         for iteration in range(mnist.train.num_examples // batch_size):
             X_batch, y_batch = mnist.train.next_batch(batch_size)
-            print(type(X_batch))
             sess.run(training_op, feed_dict={X: X_batch, y: y_batch})
         acc_train = accurary.eval(feed_dict={X: X_batch, y: y_batch})
         acc_test = accurary.eval(feed_dict={X: mnist.test.images,
