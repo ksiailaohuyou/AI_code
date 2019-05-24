@@ -28,7 +28,7 @@ if __name__ == "__main__":
     data_test = xgb.DMatrix('./datasets/12.agaricus_test.txt')
 
     # 设置参数
-    # eta  惩罚项
+    # eta  惩罚项   二分类
     param = {'max_depth': 2, 'eta': 1, 'silent': 1, 'objective': 'binary:logitraw'}  # logistic
     # param = {'max_depth': 3, 'eta': 0.3, 'silent': 1, 'objective': 'reg:logistic'}
     watchlist = [(data_test, 'eval'), (data_train, 'train')]
